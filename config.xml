@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="com.dezx.painel" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>PAINEL ADMIN INJETOR</name>
+    <description>Painel Administrativo DVA MODS</description>
+    <author email="dev@cordova.apache.org" href="http://cordova.io">DVA MODS Team</author>
+    
+    <content src="https://dezx60hz.github.io/AdminPainel05062012/index.html" />
+    
+    <access origin="*" />
+    <allow-navigation href="https://dezx60hz.github.io/*" />
+    <allow-intent href="http://*/*" />
+    <allow-intent href="https://*/*" />
+</widget>
