@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Base Styles */
+    :root {
+      --primary: #4361ee;
+      --secondary: #3f37c9;
+      --success: #4cc9f0;
+      --danger: #f72585;
+      --warning: #f8961e;
+      --info: #4895ef;
+      --light: #f8f9fa;
+      --dark: #212529;
+      --gray: #6c757d;
+      --white: #ffffff;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f5f7fa;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 15px;
+    }
+
+    /* Header Styles */
+    .header {
+      background-color: var(--white);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      padding: 15px 0;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+    }
+
+    .header .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .header-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    /* Button Styles */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: none;
+      background-color: transparent;
+      gap: 8px;
+    }
+
+    .btn-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+    }
+
+    .btn-primary {
+      background-color: var(--primary);
+      color: var(--white);
+    }
+
+    .btn-primary:hover {
+      background-color: var(--secondary);
+    }
+
+    /* Connection Status */
+    .connection-status {
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 15px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .status-online { background: rgba(76, 201, 240, 0.1); color: var(--success); }
+    .status-offline { background: rgba(247, 37, 133, 0.1); color: var(--danger); }
+
+    /* Sidebar Styles */
+    .sidebar {
+      position: fixed;
+      top: 70px;
+      left: 0;
+      bottom: 0;
+      width: 250px;
+      background-color: var(--white);
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+      z-index: 900;
+    }
+
+    .sidebar.active {
+      left: -250px;
+    }
+
+    .sidebar-menu {
+      list-style: none;
+      padding: 15px 0;
+    }
+
+    .sidebar-item {
+      margin-bottom: 5px;
+    }
+
+    .sidebar-link {
+      display: flex;
+      align-items: center;
+      padding: 12px 20px;
+      color: var(--gray);
+      text-decoration: none;
+      transition: all 0.3s ease;
+      gap: 10px;
+    }
+
+    .sidebar-link:hover, .sidebar-link.active {
+      background-color: rgba(67, 97, 238, 0.1);
+      color: var(--primary);
+    }
+
+    .sidebar-link.active {
+      font-weight: 500;
+    }
+
+    /* Main Content Styles */
+    .main-content {
+      margin-top: 70px;
+      margin-left: 250px;
+      padding: 20px;
+      transition: all 0.3s ease;
+    }
+
+    .main-content.full-width {
+      margin-left: 0;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .stat-card {
+      background-color: var(--white);
+      border-radius: 10px;
+      padding: 25px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .stat-card h3 {
+      font-size: 1rem;
+      color: var(--gray);
+      margin-bottom: 10px;
+      font-weight: 500;
+    }
+
+    .stat-card p {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--dark);
+    }
+
+    .stat-icon {
+      position: absolute;
+      right: 20px;
+      top: 20px;
+      font-size: 2.5rem;
+      opacity: 0.1;
+      color: var(--dark);
+    }
+
+    /* Card Styles */
+    .card {
+      background-color: var(--white);
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Recent Activity */
+    .activity-list {
+      list-style: none;
+    }
+
+    .activity-item {
+      display: flex;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid #eee;
+      gap: 15px;
+    }
+
+    .activity-item:last-child {
+      border-bottom: none;
+    }
+
+    .activity-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: rgba(67, 97, 238, 0.1);
+      color: var(--primary);
+    }
+
+    .activity-info h4 {
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+
+    .activity-info p {
+      font-size: 0.85rem;
+      color: var(--gray);
+    }
+
+    .loading-text { color: var(--gray); font-style: italic; }
+    .error-text { color: var(--danger); font-weight: 600; }
+
+    /* Responsive Styles */
+    @media (max-width: 768px) {
+      .sidebar { left: -250px; }
+      .sidebar.active { left: 0; }
+      .main-content { margin-left: 0; }
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="container">
+      <div class="header-left">
+        <button class="btn btn-icon" id="sidebarToggle">
+          <i class="fas fa-bars"></i>
+        </button>
+        <h1 class="header-title">
+          <i class="fas fa-shield-alt"></i>
+          <span>Painel de Administração</span>
+        </h1>
+      </div>
+      <div class="header-actions">
+        <div class="user-avatar">
+          <img src="/logo.png" alt="Admin" width="40" height="40" class="rounded-circle" onerror="this.src='https://via.placeholder.com/40'">
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <aside class="sidebar" id="sidebar">
+    <ul class="sidebar-menu">
+      <li class="sidebar-item">
+        <a href="index.html" class="sidebar-link active">
+          <i class="fas fa-tachometer-alt"></i>
+          <span>Painel</span>
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a href="admin.html" class="sidebar-link">
+          <i class="fas fa-user-plus"></i>
+          <span>Adicionar Usuário</span>
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a href="bulk-generate.html" class="sidebar-link">
+          <i class="fas fa-key"></i>
+          <span>Gerar em Massa</span>
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a href="dashboard.html" class="sidebar-link">
+          <i class="fas fa-users-cog"></i>
+          <span>Gerenciar Usuários</span>
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a href="settings.html" class="sidebar-link">
+          <i class="fas fa-cog"></i>
+          <span>Configurações</span>
+        </a>
+      </li>
+    </ul>
+  </aside>
+
+  <main class="main-content" id="mainContent">
+    <div class="container">
+      <div id="connectionStatus" class="connection-status status-online">
+        <i class="fas fa-wifi"></i> Verificando conexão...
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <h3>Total de Usuários</h3>
+          <p id="totalUsers">--</p>
+          <div class="stat-icon"><i class="fas fa-users"></i></div>
+        </div>
+        <div class="stat-card">
+          <h3>Usuários Ativos</h3>
+          <p id="activeUsers">--</p>
+          <div class="stat-icon"><i class="fas fa-user-check"></i></div>
+        </div>
+        <div class="stat-card">
+          <h3>Keys Geradas</h3>
+          <p id="totalKeys">--</p>
+          <div class="stat-icon"><i class="fas fa-key"></i></div>
+        </div>
+        <div class="stat-card">
+          <h3>Status do Servidor</h3>
+          <p id="serverStatus">Online</p>
+          <div class="stat-icon"><i class="fas fa-server"></i></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 class="card-title"><i class="fas fa-history"></i> Atividade Recente</h2>
+        <ul class="activity-list" id="activityList">
+          <li class="loading-text"><i class="fas fa-spinner fa-spin"></i> Carregando atividades...</li>
+        </ul>
+      </div>
+    </div>
+  </main>
+
+  <script type="module">
+    import { db } from "./firebase-config.js";
+    import { ref, onValue } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-database.js";
+
+    // Toggle sidebar
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const sidebar = document.getElementById('sidebar');
+    const mainContent = document.getElementById('mainContent');
+
+    sidebarToggle.addEventListener('click', () => {
+      sidebar.classList.toggle('active');
+      mainContent.classList.toggle('full-width');
+    });
+
+    // Monitor Connection
+    const connectionStatusEl = document.getElementById('connectionStatus');
+    const connectedRef = ref(db, ".info/connected");
+    onValue(connectedRef, (snap) => {
+      if (snap.val() === true) {
+        connectionStatusEl.innerHTML = '<i class="fas fa-wifi"></i> Conectado';
+        connectionStatusEl.className = 'connection-status status-online';
+        document.getElementById('serverStatus').textContent = 'Online';
+      } else {
+        connectionStatusEl.innerHTML = '<i class="fas fa-wifi-slash"></i> Offline';
+        connectionStatusEl.className = 'connection-status status-offline';
+        document.getElementById('serverStatus').textContent = 'Offline';
+      }
+    });
+
+    // Fetch and display stats
+    const userinfoRef = ref(db, 'userinfo');
+    onValue(userinfoRef, (snapshot) => {
+      const data = snapshot.val();
+      const activityList = document.getElementById('activityList');
+      
+      if (data) {
+        const users = Object.values(data);
+        document.getElementById('totalUsers').textContent = users.length;
+        document.getElementById('activeUsers').textContent = users.filter(u => u.status === 'active').length;
+        document.getElementById('totalKeys').textContent = users.length;
+
+        // Update activity list (last 5)
+        activityList.innerHTML = '';
+        
+        const sortedUsers = users.sort((a, b) => {
+          try {
+            // Converte DD-MM-YYYY HH:mm para objeto Date
+            const parseDate = (dStr) => {
+                if(!dStr) return 0;
+                const [date, time] = dStr.split(' ');
+                const [d, m, y] = date.split('-');
+                return new Date(`${y}-${m}-${d}T${time}`).getTime();
+            };
+            return parseDate(b.rgtime) - parseDate(a.rgtime);
+          } catch(e) { return 0; }
+        }).slice(0, 5);
+
+        sortedUsers.forEach(user => {
+          const li = document.createElement('li');
+          li.className = 'activity-item';
+          li.innerHTML = `
+            <div class="activity-icon"><i class="fas fa-user-plus"></i></div>
+            <div class="activity-info">
+              <h4>Novo usuário: ${user.username || 'Desconhecido'}</h4>
+              <p>Criado em: ${user.rgtime || 'N/A'}</p>
+            </div>
+          `;
+          activityList.appendChild(li);
+        });
+      } else {
+        document.getElementById('totalUsers').textContent = '0';
+        document.getElementById('activeUsers').textContent = '0';
+        document.getElementById('totalKeys').textContent = '0';
+        activityList.innerHTML = '<li>Nenhuma atividade recente</li>';
+      }
+    }, (error) => {
+        document.getElementById('activityList').innerHTML = `<li class="error-text">Erro ao carregar: ${error.message}</li>`;
+    });
+  </script>
+</body>
+</html>
